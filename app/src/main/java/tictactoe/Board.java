@@ -16,11 +16,11 @@ public class Board {
                 this.board.add(cell);
     }
 
-    int getWidth() {
+    public int getWidth() {
         return (int)Math.sqrt(board.size());
     }
 
-    Character getCell(int row, int col) {
+    public Character getCell(int row, int col) {
         return board.get(row * getWidth() + col);
     }
 }
