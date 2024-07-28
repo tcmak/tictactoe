@@ -1,65 +1,64 @@
 package tictactoe;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class Game {
     private char _EMPTY = '-';
-    private ArrayList<Character> board;
-    private int width = 0;
+    private Board board;
 
-    public Game(List<Character> board) {
-        this.board = new ArrayList<Character>(board);
-        this.width = (int)Math.sqrt(board.size());
+    public Game(Board board) {
+        this.board  = board;
     }
 
     public static void main(String[] args) {
         System.out.println("Hello TicTacToe");
     }
 
+    interface checkFunction {
+        char check();
+    }
+
+    checkFunction[] checkFunctions = new checkFunction[] {
+        this::checkAllRows,
+        this::checkAllCols,
+        this::checkForeDiag,
+        this::checkBackDiag
+    };
+
     public char findWinner() {
         char winner = _EMPTY;
 
-        winner = checkAllRows();
-        if (winner != _EMPTY) return winner;
-
-        winner = checkAllCols();
-        if (winner != _EMPTY) return winner;
-
-        winner = checkBackDiag();
-        if (winner != _EMPTY) return winner;
-
-        winner = checkForeDiag();
-        if (winner != _EMPTY) return winner;
+        for (checkFunction checkFunction: checkFunctions) {
+            winner = checkFunction.check();
+            if (winner != _EMPTY) return winner;
+        }
 
         return _EMPTY;
     }
 
     private char checkForeDiag() {
-        for (int i = 0; i < width-1; i++) 
-            if (board.get(getIndex(i, width - i - 1)) != board.get(getIndex(i + 1, width - i - 2)))
+        for (int i = 0; i < board.getWidth()-1; i++) 
+            if (board.getCell(i, board.getWidth() - i - 1) != board.getCell(i + 1, board.getWidth() - i - 2))
                 return _EMPTY;
 
-        if (board.get(getIndex(width-1, 0)) == board.get(getIndex(width-2, 1)))
-            return board.get(getIndex(width-1,0));
+        if (board.getCell(board.getWidth()-1, 0) == board.getCell(board.getWidth()-2, 1))
+            return board.getCell(board.getWidth()-1,0);
 
         return _EMPTY;
     }
 
     private char checkBackDiag() {
-        for (int i = 0; i < width-1; i++) {
-            if (board.get(getIndex(i, i)) != board.get(getIndex(i+1, i+1)))  
+        for (int i = 0; i < board.getWidth()-1; i++) {
+            if (board.getCell(i, i) != board.getCell(i+1, i+1))  
                 return _EMPTY;
         }
 
-        if (board.get(getIndex(width-2, (width-2))) == board.get(getIndex(width-1, width-1))) 
-            return board.get(0);
+        if (board.getCell(board.getWidth()-2, (board.getWidth()-2)) == board.getCell(board.getWidth()-1, board.getWidth()-1)) 
+            return board.getCell(0,0);
 
         return _EMPTY;
     }
 
     private char checkAllCols() {
-        for (int i = 0; i < width; i++) {
+        for (int i = 0; i < board.getWidth(); i++) {
             char winner = checkCol(i);
             if (winner != _EMPTY) return winner;
         }
@@ -67,18 +66,18 @@ public class Game {
     }
 
     private char checkCol(int col) {
-        for (int i = 0; i < width-1; i++) 
-            if (board.get(getIndex(i, col)) != board.get(getIndex(i+1, col))) 
+        for (int i = 0; i < board.getWidth()-1; i++) 
+            if (board.getCell(i, col) != board.getCell(i+1, col)) 
                 return _EMPTY;
 
-        if (board.get(getIndex(width-1,col)) == board.get(getIndex(width-2, col)))
-            return board.get(col);
+        if (board.getCell(board.getWidth()-1,col) == board.getCell(board.getWidth()-2, col))
+            return board.getCell(0,col);
 
         return _EMPTY;
     }
 
     private char checkAllRows() {
-        for (int i = 0; i < width; i++) {
+        for (int i = 0; i < board.getWidth(); i++) {
             char winner = checkRow(i);
             if (winner != _EMPTY) return winner;
         }
@@ -86,17 +85,13 @@ public class Game {
     }
 
     private char checkRow(int row) {
-        for (int i = 0; i < width-1; i++) 
-            if (board.get(getIndex(row, i)) != board.get(getIndex(row, i+1))) 
+        for (int i = 0; i < board.getWidth()-1; i++) 
+            if (board.getCell(row, i) != board.getCell(row, i+1)) 
                 return _EMPTY;
 
-        if (board.get(getIndex(row, width - 2)) == board.get(getIndex(row, width-1)))
-            return board.get(getIndex(row,0));
+        if (board.getCell(row, board.getWidth() - 2) == board.getCell(row, board.getWidth()-1))
+            return board.getCell(row,0);
 
         return _EMPTY;
-    }
-
-    private int getIndex(int row, int col) {
-        return row * width + col;
     }
 }
